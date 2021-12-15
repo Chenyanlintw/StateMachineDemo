@@ -103,4 +103,14 @@ public class Enemy : MonoBehaviour
             Hp = 0;
         }
     }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow; 
+        GizmosHelper.DrawCircle( transform.position,  5f );
+
+        Gizmos.color = Color.red; 
+        GizmosHelper.DrawCircle( transform.position,  10f );
+    }
+
 }
