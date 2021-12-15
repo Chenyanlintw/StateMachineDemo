@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class Enemy : MonoBehaviour
 
     public Player TargetPlayer;
     public int Hp = 100;
+    public Image HpBar;
    
     // 初始設定
     void Start()
@@ -67,6 +69,11 @@ public class Enemy : MonoBehaviour
     private void OnBulletHit(Bullet bullet)
     {
         bullet.Remove();
-        Hp -= 10;
+
+        // 扣血
+        Hp -= 15;
+        if (Hp < 0) {
+            Hp = 0;
+        }
     }
 }
