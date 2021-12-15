@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public enum BehaviorState // 列舉
 {
-    Idle, Chasing, Escape
+    Idle, Chasing, Escape, Recover
 }
 
 public class Enemy : MonoBehaviour
@@ -15,15 +15,18 @@ public class Enemy : MonoBehaviour
     private Vector3 IdleTarget = Vector3.zero;
 
     public Player TargetPlayer;
-    public int Hp = 100;
+    public GameObject HpPool;
+    public float Hp = 50;
     public BehaviorState State = BehaviorState.Idle; // 狀態
+
+    public bool isInHpPool = false;
    
     // 初始設定
     void Start()
     {
         // 取得角色控制元件
         agent = GetComponent<NavMeshAgent>();
-        State = BehaviorState.Idle;
+        State = BehaviorState.Recover;
     }
 
     // 遊戲迴圈
@@ -37,6 +40,10 @@ public class Enemy : MonoBehaviour
             if (Vector3.Distance(playerPos, myPos) < 5) {
                 State = BehaviorState.Chasing;
             }
+            // 判斷是否要變成逃離
+            if (Hp < 30) {
+                State = BehaviorState.Recover;
+            }
             Idle();
         }
         else if (State == BehaviorState.Chasing) {
@@ -44,10 +51,27 @@ public class Enemy : MonoBehaviour
             if (Vector3.Distance(playerPos, myPos) > 10) {
                 State = BehaviorState.Idle;
             }
+            // 判斷是否要變成逃離
+            if (Hp < 30) {
+                State = BehaviorState.Recover;
+            }
             Chasing();
         }
         else if (State == BehaviorState.Escape) {
+
+            // 判斷是否要變成閒置
+            if (Hp > 70) {
+                State = BehaviorState.Idle;
+            }
             Escape();
+        }
+
+        else if (State == BehaviorState.Recover) {
+            // 判斷是否要變成閒置
+            if (Hp > 70) {
+                State = BehaviorState.Idle;
+            }
+            Recover();
         }
     }
 
@@ -80,7 +104,21 @@ public class Enemy : MonoBehaviour
     void Escape()
     {
         Vector3 dir = transform.position - TargetPlayer.transform.position;
+        agent.isStopped = false; // 啟動 agent
         agent.SetDestination(transform.position + dir * 3f);
+    }
+
+    // 回血行為
+    void Recover()
+    {
+        if (Vector3.Distance(HpPool.transform.position, transform.position) < 5) {
+            if (Hp < 100)
+                Hp += 0.01f;
+        }
+
+
+        agent.isStopped = false; // 啟動 agent
+        agent.SetDestination(HpPool.transform.position);
     }
 
     // 碰撞
@@ -91,6 +129,7 @@ public class Enemy : MonoBehaviour
             OnBulletHit(other.GetComponent<Bullet>());
         }
     }
+
 
     // 子彈碰撞反應
     private void OnBulletHit(Bullet bullet)
