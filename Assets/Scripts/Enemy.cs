@@ -29,19 +29,19 @@ public class Enemy : MonoBehaviour
     // 遊戲迴圈
     void Update()
     {
+        Vector3 playerPos = TargetPlayer.transform.position; // 提出來共用，程式碼比較乾淨
+        Vector3 myPos = transform.position;
+        
         if (State == BehaviorState.Idle) {
-
             // 判斷是否要變成追逐
-            if (Vector3.Distance(TargetPlayer.transform.position, transform.position) < 5) {
+            if (Vector3.Distance(playerPos, myPos) < 5) {
                 State = BehaviorState.Chasing;
             }
-
             Idle();
         }
         else if (State == BehaviorState.Chasing) {
-
             // 判斷是否要變成閒置
-            if (Vector3.Distance(TargetPlayer.transform.position, transform.position) > 10) {
+            if (Vector3.Distance(playerPos, myPos) > 10) {
                 State = BehaviorState.Idle;
             }
             Chasing();
@@ -54,14 +54,14 @@ public class Enemy : MonoBehaviour
     // 追逐行為
     void Chasing()
     {
-        agent.isStopped = false;
+        agent.isStopped = false; // 啟動 agent
         agent.SetDestination(TargetPlayer.transform.position);
     }
 
     // 閒置行為
     void Idle()
     {
-        agent.isStopped = true;
+        agent.isStopped = true; // 關閉 agent
         /*  
         if (Vector3.Distance(transform.position, IdleTarget) < 2)
         {
