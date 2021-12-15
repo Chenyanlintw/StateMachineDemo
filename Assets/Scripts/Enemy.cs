@@ -11,7 +11,6 @@ public class Enemy : MonoBehaviour
 
     public Player TargetPlayer;
     public int Hp = 100;
-    public Image HpBar;
    
     // 初始設定
     void Start()
