@@ -16,28 +16,26 @@ public class Enemy : MonoBehaviour
 
     public Player TargetPlayer;
     public GameObject HpPool;
-    public float Hp = 50;
-    public BehaviorState State = BehaviorState.Idle; // 狀態
-
-    public bool isInHpPool = false;
+    public float Hp = 100;
+    public BehaviorState State;
    
     // 初始設定
     void Start()
     {
         // 取得角色控制元件
         agent = GetComponent<NavMeshAgent>();
-        State = BehaviorState.Recover;
+        State = BehaviorState.Idle;
     }
 
     // 遊戲迴圈
     void Update()
     {
-        Vector3 playerPos = TargetPlayer.transform.position; // 提出來共用，程式碼比較乾淨
+        Vector3 playerPos = TargetPlayer.transform.position;
         Vector3 myPos = transform.position;
         
         if (State == BehaviorState.Idle) {
             // 判斷是否要變成追逐
-            if (Vector3.Distance(playerPos, myPos) < 5) {
+            if (Vector3.Distance(playerPos, myPos) < 10) {
                 State = BehaviorState.Chasing;
             }
             // 判斷是否要變成補血
@@ -48,7 +46,7 @@ public class Enemy : MonoBehaviour
         }
         else if (State == BehaviorState.Chasing) {
             // 判斷是否要變成閒置
-            if (Vector3.Distance(playerPos, myPos) > 10) {
+            if (Vector3.Distance(playerPos, myPos) > 13) {
                 State = BehaviorState.Idle;
             }
             // 判斷是否要變成補血
@@ -65,10 +63,10 @@ public class Enemy : MonoBehaviour
             Recover();
         }
 
-        // 回血
+        // 在回血範圍內
         if (Vector3.Distance(HpPool.transform.position, transform.position) < 5) {
             if (Hp < 100)
-                Hp += 0.03f;
+                Hp += 0.05f;
         }
     }
 
@@ -109,7 +107,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-
     // 子彈碰撞反應
     private void OnBulletHit(Bullet bullet)
     {
@@ -125,10 +122,10 @@ public class Enemy : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow; 
-        GizmosHelper.DrawCircle( transform.position,  5f );
+        GizmosHelper.DrawCircle( transform.position,  10f );
 
         Gizmos.color = Color.red; 
-        GizmosHelper.DrawCircle( transform.position,  10f );
+        GizmosHelper.DrawCircle( transform.position,  13f );
     }
 
 }
