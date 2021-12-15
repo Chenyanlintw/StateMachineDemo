@@ -40,7 +40,7 @@ public class Enemy : MonoBehaviour
             if (Vector3.Distance(playerPos, myPos) < 5) {
                 State = BehaviorState.Chasing;
             }
-            // 判斷是否要變成逃離
+            // 判斷是否要變成補血
             if (Hp < 30) {
                 State = BehaviorState.Recover;
             }
@@ -51,27 +51,24 @@ public class Enemy : MonoBehaviour
             if (Vector3.Distance(playerPos, myPos) > 10) {
                 State = BehaviorState.Idle;
             }
-            // 判斷是否要變成逃離
+            // 判斷是否要變成補血
             if (Hp < 30) {
                 State = BehaviorState.Recover;
             }
             Chasing();
         }
-        else if (State == BehaviorState.Escape) {
-
-            // 判斷是否要變成閒置
-            if (Hp > 70) {
-                State = BehaviorState.Idle;
-            }
-            Escape();
-        }
-
         else if (State == BehaviorState.Recover) {
             // 判斷是否要變成閒置
             if (Hp > 70) {
                 State = BehaviorState.Idle;
             }
             Recover();
+        }
+
+        // 回血
+        if (Vector3.Distance(HpPool.transform.position, transform.position) < 5) {
+            if (Hp < 100)
+                Hp += 0.03f;
         }
     }
 
@@ -86,18 +83,6 @@ public class Enemy : MonoBehaviour
     void Idle()
     {
         agent.isStopped = true; // 關閉 agent
-        /*  
-        if (Vector3.Distance(transform.position, IdleTarget) < 2)
-        {
-            float r = Random.Range(0, Mathf.PI * 2);
-            float rx = Mathf.Cos(r) * 4;
-            float ry = Mathf.Sin(r) * 4;
-            IdleTarget = new Vector3(rx, 0, ry) + transform.position;
-        }
-        else
-        {
-            agent.SetDestination(IdleTarget);
-        }*/
     }
 
     // 躲避行為
@@ -111,12 +96,6 @@ public class Enemy : MonoBehaviour
     // 回血行為
     void Recover()
     {
-        if (Vector3.Distance(HpPool.transform.position, transform.position) < 5) {
-            if (Hp < 100)
-                Hp += 0.01f;
-        }
-
-
         agent.isStopped = false; // 啟動 agent
         agent.SetDestination(HpPool.transform.position);
     }
